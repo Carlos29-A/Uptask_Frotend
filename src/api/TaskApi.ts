@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
 import api from "../lib/axios";
-import { type Project, type Task, type TaskFormData } from "../types";
+import { taskSchema, type Project, type Task, type TaskFormData } from "../types";
 
 
 // Crear una tarea
@@ -30,7 +30,10 @@ export async function getTaskById({ projectId, taskId }: GetTaskByIdParams) {
     try {
         const url = `/projects/${projectId}/tasks/${taskId}`;
         const { data } = await api.get(url);
-        return data;
+        const response = taskSchema.safeParse(data);
+        if (response.success) {
+            return response.data;
+        }
     } catch (error) {
         if (isAxiosError(error)) {
             throw error.response?.data || {
@@ -77,6 +80,27 @@ export async function deleteTask({ projectId, taskId }: DeleteTaskData) {
         if (isAxiosError(error)) {
             throw error.response?.data || {
                 message: "Error al eliminar la tarea",
+            };
+        }
+        throw error;
+    }
+}
+
+// Actualizar el estado de una tarea
+type UpdateTaskStatusData = {
+    projectId: Project['_id'];
+    taskId: Task['_id'];
+    status: Task['status'];
+}
+export async function updateTaskStatus({ projectId, taskId, status }: UpdateTaskStatusData) {
+    try {
+        const url = `/projects/${projectId}/tasks/${taskId}/status`;
+        const { data } = await api.post<string>(url, { status });
+        return data;
+    } catch (error) {
+        if (isAxiosError(error)) {
+            throw error.response?.data || {
+                message: "Error al actualizar el estado de la tarea",
             };
         }
         throw error;
