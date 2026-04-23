@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { Logo } from "@/components";
+import { Logo, NavMenu } from "@/components";
 
 export default function Applayout() {
     return (
@@ -7,14 +7,15 @@ export default function Applayout() {
             <header
                 className="bg-gray-800 py-5"
             >
-                <div className="max-w-screen-2xl mx-auto flex flex-col lg:flex-row justify-between items-center">
+                <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center">
                     <div className="w-64">
                         <Logo />
                     </div>
+                    {/* Menu de hamburguesa */}
+                    <NavMenu />
                 </div>
-                {/* Menu de hamburguesa */}
             </header>
-            <section className="max-w-screen-2xl mx-auto mt-10 p-5">
+            <section className="max-w-7xl mx-auto mt-10 p-5">
                 <Outlet />
             </section>
             <footer className="py-5">
