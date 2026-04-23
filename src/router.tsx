@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Applayout from "./layout/Applayout";
+import AppLayout from "./layout/AppLayout";
 import DashboardView from "./views/DashboardView";
 
 
@@ -9,7 +9,7 @@ export default function Router() {
         <>
             <BrowserRouter>
                 <Routes>
-                    <Route element={<Applayout />}>
+                    <Route element={<AppLayout />}>
                         {/* Página principal */}
                         <Route path="/" element={<DashboardView />} index />
                     </Route>
