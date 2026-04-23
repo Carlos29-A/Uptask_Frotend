@@ -14,8 +14,6 @@ export default function DashboardView() {
         queryKey: ["projects"],
         queryFn: getProjects
     })
-    if (isLoading) return <p>Cargando...</p>;
-
     const queryClient = useQueryClient();
 
     const { mutate } = useMutation({
@@ -28,6 +26,9 @@ export default function DashboardView() {
             toast.success(data);
         }
     })
+    
+    if (isLoading) return <p>Cargando...</p>;
+    if (!data) return <p>No se pudieron cargar los proyectos</p>;
 
     return (
         <>

@@ -19,6 +19,9 @@ export default function AddTaskModal() {
     }
     const { register, handleSubmit, formState: { errors } } = useForm({ defaultValues: initialValues });
 
+    const handleCreateTask = (formData: TaskFormData) => {
+
+    }
 
     return (
         <>
@@ -61,6 +64,8 @@ export default function AddTaskModal() {
 
                                     <form
                                         className='mt-10'
+                                        onSubmit={handleSubmit(handleCreateTask)}
+                                        noValidate
                                     >
 
                                         <TaskForm register={register} errors={errors} />
