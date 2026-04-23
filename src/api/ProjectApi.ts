@@ -7,6 +7,8 @@ export async function createProject(projectData: ProjectFormData) {
         const { data } = await api.post("/projects", projectData);
         return data;
     } catch (error) {
-        console.log(error);
+        throw error.response.data || {
+            message: "Error al crear el proyecto",
+        };
     }
 }
