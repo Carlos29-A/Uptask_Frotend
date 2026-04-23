@@ -49,11 +49,23 @@ type UpdateProjectData = {
 // Actualizar un proyecto
 export async function updateProject({ projectData, projectId }: UpdateProjectData) {
     try {
-        const { data } = await api.put(`/projects/${projectId}`, projectData);
+        const { data } = await api.put<string>(`/projects/${projectId}`, projectData);
         return data;
     } catch (error) {
         throw error.response.data || {
             message: "Error al actualizar el proyecto",
+        };
+    }
+}
+
+// Eliminar un proyecto
+export async function deleteProject(projectId: Project['_id']) {
+    try {
+        const { data } = await api.delete<string>(`/projects/${projectId}`);
+        return data;
+    } catch (error) {
+        throw error.response.data || {
+            message: "Error al eliminar el proyecto",
         };
     }
 }
