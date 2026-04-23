@@ -21,3 +21,17 @@ export type Project = z.infer<typeof projectSchema>;
 export type ProjectFormData = Pick<Project, "projectName" | "clientName" | "description">;
 
 
+/** Tasks */
+export const taskStatusSchema = z.enum(["onHold", "inProgress", "completed", "underReview"]);
+
+
+export const taskSchema = z.object({
+    _id: z.string(),
+    name: z.string().min(1, "El nombre de la tarea es obligatorio"),
+    description: z.string().min(1, "La descripción de la tarea es obligatoria"),
+    project: z.string().min(1, "El proyecto de la tarea es obligatorio"),
+    status: taskStatusSchema,
+})
+
+export type Task = z.infer<typeof taskSchema>;
+export type TaskFormData = Pick<Task, "name" | "description">;
