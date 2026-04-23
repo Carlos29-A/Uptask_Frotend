@@ -14,9 +14,7 @@ export default function EditProjectView() {
         queryFn: () => getProjectById(projectId),
         retry: false,
     })
-
     if (isLoading) return <p>Cargando...</p>;
-
     if (isError) return <Navigate to="/404" />
     if (!data) return <p>Cargando...</p>
 
