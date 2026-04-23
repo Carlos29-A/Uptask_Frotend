@@ -1,4 +1,6 @@
 import { Outlet } from "react-router-dom";
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css";
 import { Logo, NavMenu } from "@/components";
 
 export default function Applayout() {
@@ -23,7 +25,10 @@ export default function Applayout() {
                     UpTask - Todos los derechos reservados {new Date().getFullYear()}
                 </p>
             </footer>
-
+            <ToastContainer
+                pauseOnHover={false}
+                pauseOnFocusLoss={false}
+            />
         </>
     )
 }

@@ -49,6 +49,9 @@
       "@/context/*": [
         "context/*"
       ],
+      "@/api/*": [
+        "api/*"
+      ],
     },
     /* Bundler mode */
     "moduleResolution": "bundler",
