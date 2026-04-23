@@ -16,6 +16,9 @@
       "@/components": [
         "components/index.ts"
       ],
+      "@/components/projects": [
+        "components/projects/index.ts"
+      ],
       "@/components/*": [
         "components/*"
       ],
