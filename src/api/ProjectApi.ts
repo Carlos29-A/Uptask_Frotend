@@ -27,3 +27,15 @@ export async function getProjects(): Promise<Project[]> {
         };
     }
 }
+
+// Obtener un proyecto por su id
+export async function getProjectById(projectId: Project['_id']): Promise<Project> {
+    try {
+        const { data } = await api.get(`/projects/${projectId}`);
+        return data;
+    } catch (error) {
+        throw error.response.data || {
+            message: "Error al obtener el proyecto",
+        };
+    }
+}
