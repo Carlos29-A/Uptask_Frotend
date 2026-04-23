@@ -39,3 +39,21 @@ export async function getProjectById(projectId: Project['_id']): Promise<Project
         };
     }
 }
+
+type UpdateProjectData = {
+    projectData: ProjectFormData;
+    projectId: Project['_id'];
+}
+
+
+// Actualizar un proyecto
+export async function updateProject({ projectData, projectId }: UpdateProjectData) {
+    try {
+        const { data } = await api.put(`/projects/${projectId}`, projectData);
+        return data;
+    } catch (error) {
+        throw error.response.data || {
+            message: "Error al actualizar el proyecto",
+        };
+    }
+}
