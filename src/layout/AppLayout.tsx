@@ -6,7 +6,6 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function Applayout() {
 
-
     const { data, isError, isLoading } = useAuth();
 
     if (isLoading) return <p>Cargando...</p>;
@@ -14,7 +13,7 @@ export default function Applayout() {
         return <Navigate to="/auth/login" />
     }
 
-    return (
+    if (data) return (
         <>
             <header
                 className="bg-gray-800 py-5"
@@ -26,7 +25,10 @@ export default function Applayout() {
                         </Link>
                     </div>
                     {/* Menu de hamburguesa */}
-                    <NavMenu />
+                    <NavMenu
+                        name={data.name}
+
+                    />
                 </div>
             </header>
             <section className="max-w-7xl mx-auto mt-10 p-5">
