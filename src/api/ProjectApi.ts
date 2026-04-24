@@ -13,6 +13,7 @@ export async function createProject(projectData: ProjectFormData) {
 }
 
 export async function getProjects(): Promise<DashboardProject[]> {
+
     try {
         const { data } = await api.get("/projects");
 

@@ -104,3 +104,17 @@ export async function resetPassword({ formData, token }: { formData: NewPassword
     }
 
 }
+
+export async function getUser() {
+    try {
+        const { data } = await api.get("/auth/user");
+        return data;
+    } catch (error) {
+        if (isAxiosError(error)) {
+            throw error.response?.data || {
+                message: "Error al obtener el usuario",
+            };
+        }
+        throw error;
+    }
+}
