@@ -1,6 +1,6 @@
 import api from "../lib/axios";
 import { isAxiosError } from "axios";
-import type { ConfirmAccountForm, RequestConfirmationCodeForm, UserLoginForm, UserRegistrationForm } from "../types";
+import type { ConfirmAccountForm, ForgotPasswordForm, NewPasswordForm, RequestConfirmationCodeForm, UserLoginForm, UserRegistrationForm } from "../types";
 
 export async function createAccount(formData: UserRegistrationForm) {
     try {
@@ -56,4 +56,48 @@ export async function AuthenticateUser(formData: UserLoginForm) {
         }
         throw error;
     }
+}
+
+export async function forgotPassword(formData: ForgotPasswordForm) {
+    try {
+        const { data } = await api.post<{ message: string }>("/auth/forgot-password", formData);
+        return data;
+    } catch (error) {
+        if (isAxiosError(error)) {
+            throw error.response?.data || {
+                message: "Error al reestablecer la contraseña",
+            };
+        }
+        throw error;
+    }
+}
+export async function validateToken(formData: ConfirmAccountForm) {
+    try {
+        const { data } = await api.post<{ message: string }>("/auth/validate-token", formData);
+
+        return data;
+    } catch (error) {
+        if (isAxiosError(error)) {
+            throw error.response?.data || {
+                message: "Error al validar el token",
+            };
+        }
+        throw error;
+    }
+}
+// restablecer contraseña
+export async function resetPassword({ formData, token }: { formData: NewPasswordForm, token: string }) {
+    try {
+
+        const { data } = await api.post<{ message: string }>(`/auth/update-password/${token}`, formData);
+        return data;
+    } catch (error) {
+        if (isAxiosError(error)) {
+            throw error.response?.data || {
+                message: "Error al restablecer la contraseña",
+            };
+        }
+        throw error;
+    }
+
 }
