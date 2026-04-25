@@ -40,6 +40,7 @@ export const taskSchema = z.object({
     description: z.string().min(1, "La descripción de la tarea es obligatoria"),
     project: z.string().min(1, "El proyecto de la tarea es obligatorio"),
     status: taskStatusSchema,
+    completedBy: userSchema.or(z.null()),
     createdAt: z.string(),
     updatedAt: z.string(),
 })
