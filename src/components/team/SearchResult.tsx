@@ -13,7 +13,6 @@ export default function SearchResult({ user, resetData }: SearchResultProps) {
     const params = useParams()
     const projectId = params.projectId!
 
-
     const { mutate } = useMutation({
         mutationFn: addUserToProject,
         onError: (error) => {
