@@ -55,6 +55,7 @@ export const projectSchema = z.object({
     clientName: z.string(),
     description: z.string(),
     tasks: z.array(taskSchema),
+    manager: z.string()
 })
 
 export const dashboardProjectSchema = z.array(
@@ -63,6 +64,7 @@ export const dashboardProjectSchema = z.array(
         projectName: true,
         clientName: true,
         description: true,
+        manager: true,
     })
 )
 export type DashboardProject = z.infer<typeof dashboardProjectSchema>[number];
