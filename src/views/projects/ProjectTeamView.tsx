@@ -1,22 +1,38 @@
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import AddMemberModal from "@/components/team/AddMemberModal";
-import { getTeamMembers } from "@/api/TeamApi";
+import { deleteTeamMember, getTeamMembers } from "@/api/TeamApi";
 import { Menu, Transition } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import { Fragment } from "react/jsx-runtime";
+import { toast } from "react-toastify";
 
 export default function ProjectTeamView() {
 
     const navigate = useNavigate();
     const params = useParams();
     const projectId = params.projectId as string;
+    const queryClient = useQueryClient();
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ["projectTeam", projectId],
         queryFn: () => getTeamMembers({ projectId }),
         retry: false,
     })
+
+
+    const { mutate } = useMutation({
+        mutationFn: deleteTeamMember,
+        onError: (error) => {
+            toast.error(error.message);
+        },
+        onSuccess: (data) => {
+            toast.success(data.message);
+            queryClient.invalidateQueries({ queryKey: ["projectTeam", projectId] });
+        }
+    })
+
+
     if (isLoading) return <p>Cargando...</p>;
     if (isError) return <Navigate to="/404" />
     if (data) return (
@@ -76,6 +92,7 @@ export default function ProjectTeamView() {
                                                 <button
                                                     type='button'
                                                     className='block px-3 py-1 text-sm leading-6 text-red-500'
+                                                    onClick={() => mutate({ projectId, userId: member._id })}
                                                 >
                                                     Eliminar del Proyecto
                                                 </button>

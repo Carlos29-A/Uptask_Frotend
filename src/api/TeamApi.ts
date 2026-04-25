@@ -45,3 +45,17 @@ export async function getTeamMembers({ projectId }: { projectId: Project['_id'] 
         }
     }
 }
+
+// Eliminar usuario del proyecto
+export async function deleteTeamMember({ projectId, userId }: { projectId: Project['_id'], userId: TeamMember['_id'] }) {
+    try {
+        const { data } = await api.delete<{ message: string }>(`/projects/${projectId}/team/${userId}`);
+        return data;
+    } catch (error) {
+        if (isAxiosError(error)) {
+            throw error.response?.data || {
+                message: "Error al eliminar el usuario",
+            };
+        }
+    }
+}
