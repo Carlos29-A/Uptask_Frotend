@@ -1,5 +1,5 @@
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
-import type { Task, TaskStatus } from "@/types/index";
+import type { Project, Task, TaskProject, TaskStatus } from "@/types/index";
 import TaskCard from "./TaskCard";
 import DropTask from "./DropTask";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,11 +8,11 @@ import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 
 type TaskListProps = {
-    tasks: Task[];
+    tasks: TaskProject[];
     canEdit: boolean;
 }
 type StatusGroups = {
-    [key: string]: Task[];
+    [key: string]: TaskProject[];
 }
 
 const initialStatusGroups: StatusGroups = {
@@ -71,6 +71,24 @@ export default function TaskList({ tasks, canEdit }: TaskListProps) {
             const taskId = active.id.toLocaleString();
             const status = over.id as TaskStatus;
             mutate({ projectId, taskId, status });
+
+
+            queryClient.setQueryData(["editProject", projectId], (oldData: Project) => {
+                // Actualizar los datos que estan en cache
+                const updatedTasks = oldData.tasks.map((task: Task) => {
+                    if (task._id === taskId) {
+                        return {
+                            ...task,
+                            status
+                        }
+                    }
+                    return task;
+                })
+                return {
+                    ...oldData,
+                    tasks: updatedTasks,
+                }
+            })
         }
     }
     return (

@@ -1,5 +1,5 @@
 import api from "../lib/axios";
-import { dashboardProjectSchema, type DashboardProject, type Project, type ProjectFormData } from "../types";
+import { dashboardProjectSchema, editProjectSchema, projectSchema, type DashboardProject, type Project, type ProjectFormData } from "../types";
 
 export async function createProject(projectData: ProjectFormData) {
     try {
@@ -30,10 +30,27 @@ export async function getProjects(): Promise<DashboardProject[]> {
 }
 
 // Obtener un proyecto por su id
-export async function getProjectById(projectId: Project['_id']): Promise<Project> {
+export async function getProjectById(projectId: Project['_id']) {
     try {
         const { data } = await api.get(`/projects/${projectId}`);
-        return data;
+        const response = editProjectSchema.safeParse(data);
+        if (response.success) {
+            return response.data;
+        }
+    } catch (error) {
+        throw error.response.data || {
+            message: "Error al obtener el proyecto",
+        };
+    }
+}
+export async function getFullProjectById(projectId: Project['_id']) {
+    try {
+        const { data } = await api.get(`/projects/${projectId}`);
+        const response = projectSchema.safeParse(data);
+        console.log({ response });
+        if (response.success) {
+            return response.data;
+        }
     } catch (error) {
         throw error.response.data || {
             message: "Error al obtener el proyecto",

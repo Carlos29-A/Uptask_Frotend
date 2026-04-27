@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getTaskById, updateTaskStatus } from '@/api/TaskApi';
 import { toast } from 'react-toastify';
 import { formatDate } from '@/utils/utils';
-import type { Task, TaskStatus } from '@/types/index';
+import type { TaskStatus } from '@/types/index';
 import NotesPanel from '../notes/NotesPanel';
 
 
