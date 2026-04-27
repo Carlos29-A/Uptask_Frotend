@@ -1,3 +1,4 @@
+
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
@@ -6,6 +7,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Task } from "@/types/index";
 import { deleteTask } from '@/api/TaskApi';
 import { toast } from 'react-toastify';
+import { useDraggable } from '@dnd-kit/core';
+
 
 type TaskCardProps = {
     task: Task;
@@ -13,6 +16,12 @@ type TaskCardProps = {
 }
 
 export default function TaskCard({ task, canEdit }: TaskCardProps) {
+
+
+
+    const { attributes, listeners, setNodeRef, transform } = useDraggable({
+        id: task._id
+    });
 
     // Permite colocar en la url parametros
     const navigate = useNavigate();
@@ -31,9 +40,19 @@ export default function TaskCard({ task, canEdit }: TaskCardProps) {
         }
     })
 
+
+    const style = transform ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`
+    } : undefined;
+
     return (
-        <li className="p-5 bg-white border border-slate-300 flex justify-between">
+        <li
+            className="p-5 bg-white border border-slate-300 flex justify-between">
             <div
+                {...listeners}
+                {...attributes}
+                ref={setNodeRef}
+                style={style}
                 className="min-w-0 flex flex-col gap-y-4"
             >
                 <button
