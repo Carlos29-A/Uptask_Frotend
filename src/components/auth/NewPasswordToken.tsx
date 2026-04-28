@@ -12,11 +12,7 @@ type NewPasswordTokenProps = {
     setIsValidToken?: Dispatch<SetStateAction<boolean>>;
 };
 
-export default function NewPasswordToken({
-    token,
-    setToken,
-    setIsValidToken,
-}: NewPasswordTokenProps) {
+export default function NewPasswordToken({ token, setToken, setIsValidToken }: NewPasswordTokenProps) {
 
     const { mutate } = useMutation({
         mutationFn: validateToken,
@@ -25,13 +21,10 @@ export default function NewPasswordToken({
         },
         onSuccess: (data) => {
             toast.success(data.message);
-        }
-    })
+        },
+    });
 
-
-    const handleChange = (value: string) => {
-        setToken(value);
-    };
+    const handleChange = (value: string) => { setToken(value); };
     const handleComplete = (value: string) => {
         setToken(value);
         mutate({ token: value });
@@ -39,32 +32,28 @@ export default function NewPasswordToken({
     };
 
     return (
-        <>
-            <form
-                className="space-y-8 p-10 rounded-lg bg-white mt-10"
-            >
-                <label
-                    className="font-normal text-2xl text-center block"
-                >Código de 6 dígitos</label>
-                <div className="flex justify-center gap-5">
+        <div>
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+                <label className="text-sm font-medium text-slate-700 block mb-5 text-center">
+                    Código de verificación
+                </label>
+                <div className="flex justify-center gap-3">
                     <PinInput value={token} onChange={handleChange} onComplete={handleComplete}>
-                        <PinInputField className="h-10 w-10 p-3 rounded-lg border-gray-300 border placeholder-white" />
-                        <PinInputField className="h-10 w-10 p-3 rounded-lg border-gray-300 border placeholder-white" />
-                        <PinInputField className="h-10 w-10 p-3 rounded-lg border-gray-300 border placeholder-white" />
-                        <PinInputField className="h-10 w-10 p-3 rounded-lg border-gray-300 border placeholder-white" />
-                        <PinInputField className="h-10 w-10 p-3 rounded-lg border-gray-300 border placeholder-white" />
-                        <PinInputField className="h-10 w-10 p-3 rounded-lg border-gray-300 border placeholder-white" />
+                        <PinInputField className="!w-12 !h-12 !text-lg !font-bold !text-center !rounded-xl !border !border-slate-200 !outline-none text-slate-800" />
+                        <PinInputField className="!w-12 !h-12 !text-lg !font-bold !text-center !rounded-xl !border !border-slate-200 !outline-none text-slate-800" />
+                        <PinInputField className="!w-12 !h-12 !text-lg !font-bold !text-center !rounded-xl !border !border-slate-200 !outline-none text-slate-800" />
+                        <PinInputField className="!w-12 !h-12 !text-lg !font-bold !text-center !rounded-xl !border !border-slate-200 !outline-none text-slate-800" />
+                        <PinInputField className="!w-12 !h-12 !text-lg !font-bold !text-center !rounded-xl !border !border-slate-200 !outline-none text-slate-800" />
+                        <PinInputField className="!w-12 !h-12 !text-lg !font-bold !text-center !rounded-xl !border !border-slate-200 !outline-none text-slate-800" />
                     </PinInput>
                 </div>
-            </form>
-            <nav className="mt-10 flex flex-col space-y-4">
-                <Link
-                    to='/auth/forgot-password'
-                    className="text-center text-gray-300 font-normal"
-                >
-                    Solicitar un nuevo Código
+                <p className="text-xs text-slate-400 text-center mt-4">Se valida automáticamente al completar los 6 dígitos</p>
+            </div>
+            <div className="mt-5 text-center">
+                <Link to='/auth/forgot-password' className="text-sm text-slate-500 hover:text-fuchsia-600 transition-colors">
+                    ¿No recibiste el código? <span className="font-semibold text-fuchsia-600">Solicitar nuevo</span>
                 </Link>
-            </nav>
-        </>
-    )
+            </div>
+        </div>
+    );
 }

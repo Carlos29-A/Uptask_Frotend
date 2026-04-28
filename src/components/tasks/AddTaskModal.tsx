@@ -7,31 +7,23 @@ import { useForm } from 'react-hook-form';
 import TaskForm from './TaskForm';
 import { toast } from 'react-toastify';
 import { createTask } from '@/api/TaskApi';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 export default function AddTaskModal() {
 
-    // Leer si el modal existe
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const modalTask = queryParams.get('newTask');
-    const showModal = modalTask ? true : false;
+    const showModal = !!queryParams.get('newTask');
 
-
-    // Obtener el id del proyecto
     const params = useParams();
     const projectId = params.projectId as string;
 
-    // Obtener los valores iniciales del formulario
-    const initialValues: TaskFormData = {
-        name: '',
-        description: '',
-    }
+    const initialValues: TaskFormData = { name: '', description: '' };
     const { register, handleSubmit, reset, formState: { errors } } = useForm({ defaultValues: initialValues });
 
-
     const queryClient = useQueryClient();
-    const { mutate } = useMutation({
+    const { mutate, isPending } = useMutation({
         mutationFn: createTask,
         onError: (error) => {
             toast.error(error.message);
@@ -41,77 +33,70 @@ export default function AddTaskModal() {
             reset();
             navigate('', { replace: true });
             queryClient.invalidateQueries({ queryKey: ["editProject", projectId] });
-        }
-    })
+        },
+    });
 
     const handleCreateTask = (formData: TaskFormData) => {
-        const data = {
-            taskData: formData,
-            projectId
-        }
-        mutate(data);
-    }
+        mutate({ taskData: formData, projectId });
+    };
 
     return (
-        <>
-            <Transition appear show={showModal} as={Fragment}>
-                <Dialog as="div" className="relative z-10" onClose={() => navigate('', { replace: true })}>
-                    <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <div className="fixed inset-0 bg-black/60" />
-                    </Transition.Child>
+        <Transition appear show={showModal} as={Fragment}>
+            <Dialog as="div" className="relative z-50" onClose={() => navigate('', { replace: true })}>
+                <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-200"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-150"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                >
+                    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" />
+                </Transition.Child>
 
-                    <div className="fixed inset-0 overflow-y-auto">
-                        <div className="flex min-h-full items-center justify-center p-4 text-center">
-                            <Transition.Child
-                                as={Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0 scale-95"
-                                enterTo="opacity-100 scale-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100 scale-100"
-                                leaveTo="opacity-0 scale-95"
-                            >
-                                <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all p-16">
-                                    <Dialog.Title
-                                        as="h3"
-                                        className="font-black text-4xl  my-5"
+                <div className="fixed inset-0 overflow-y-auto">
+                    <div className="flex min-h-full items-center justify-center p-4">
+                        <Transition.Child
+                            as={Fragment}
+                            enter="ease-out duration-200"
+                            enterFrom="opacity-0 scale-95"
+                            enterTo="opacity-100 scale-100"
+                            leave="ease-in duration-150"
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95"
+                        >
+                            <Dialog.Panel className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden">
+                                <div className="flex items-center justify-between px-7 pt-7 pb-5 border-b border-slate-100">
+                                    <div>
+                                        <Dialog.Title as="h3" className="text-xl font-bold text-slate-900">
+                                            Nueva Tarea
+                                        </Dialog.Title>
+                                        <p className="text-sm text-slate-500 mt-0.5">Completa los campos para crear la tarea</p>
+                                    </div>
+                                    <button
+                                        onClick={() => navigate('', { replace: true })}
+                                        className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
                                     >
-                                        Nueva Tarea
-                                    </Dialog.Title>
+                                        <XMarkIcon className="w-5 h-5" />
+                                    </button>
+                                </div>
 
-                                    <p className="text-xl font-bold">Llena el formulario y crea  {''}
-                                        <span className="text-fuchsia-600">una tarea</span>
-                                    </p>
-
-                                    <form
-                                        className='mt-10'
-                                        onSubmit={handleSubmit(handleCreateTask)}
-                                        noValidate
+                                <form className="px-7 py-6 space-y-5" onSubmit={handleSubmit(handleCreateTask)} noValidate>
+                                    <TaskForm register={register} errors={errors} />
+                                    <button
+                                        type="submit"
+                                        disabled={isPending}
+                                        className="w-full bg-fuchsia-600 hover:bg-fuchsia-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm cursor-pointer"
                                     >
-
-                                        <TaskForm register={register} errors={errors} />
-
-                                        <input
-                                            type='submit'
-                                            value={'Crear Tarea'}
-                                            className='bg-fuchsia-800 hover:bg-fuchsia-950 text-white font-bold py-3 px-10  text-center inline-block mt-5 transition-colors w-full cursor-pointer'
-                                        />
-                                    </form>
-
-                                </Dialog.Panel>
-                            </Transition.Child>
-                        </div>
+                                        {isPending ? 'Creando...' : 'Crear Tarea'}
+                                    </button>
+                                </form>
+                            </Dialog.Panel>
+                        </Transition.Child>
                     </div>
-                </Dialog>
-            </Transition>
-        </>
-    )
+                </div>
+            </Dialog>
+        </Transition>
+    );
 }

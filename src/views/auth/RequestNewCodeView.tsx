@@ -5,15 +5,13 @@ import { ErrorMessage } from "@/components/ErrorMessage";
 import { useMutation } from "@tanstack/react-query";
 import { requestConfirmationCode } from "@/api/AuthApi";
 import { toast } from "react-toastify";
+import { EnvelopeIcon } from "@heroicons/react/24/outline";
 
-
-export default function RegisterView() {
-    const initialValues: RequestConfirmationCodeForm = {
-        email: ''
-    }
+export default function RequestNewCodeView() {
+    const initialValues: RequestConfirmationCodeForm = { email: '' };
     const { register, handleSubmit, reset, formState: { errors } } = useForm({ defaultValues: initialValues });
 
-    const { mutate } = useMutation({
+    const { mutate, isPending } = useMutation({
         mutationFn: requestConfirmationCode,
         onError: (error) => {
             toast.error(error.message);
@@ -21,68 +19,61 @@ export default function RegisterView() {
         onSuccess: (data) => {
             toast.success(data.message);
             reset();
-        }
-    })
+        },
+    });
 
-    const handleRequestCode = (formData: RequestConfirmationCodeForm) => { mutate(formData); }
+    const handleRequestCode = (formData: RequestConfirmationCodeForm) => { mutate(formData); };
 
     return (
-        <>
-            <h1 className="text-5xl font-black text-white">Solicitar Código de Confirmación</h1>
-            <p className="text-2xl font-light text-white mt-5">
-                Coloca tu e-mail para recibir {''}
-                <span className=" text-fuchsia-500 font-bold"> un nuevo código</span>
-            </p>
+        <div>
+            <div className="mb-8">
+                <h2 className="text-3xl font-bold text-slate-900">Solicitar nuevo código</h2>
+                <p className="text-slate-500 text-sm mt-1">
+                    Ingresa tu email y te enviaremos un nuevo código de confirmación
+                </p>
+            </div>
 
-            <form
-                onSubmit={handleSubmit(handleRequestCode)}
-                className="space-y-8 p-10 rounded-lg bg-white mt-10"
-                noValidate
-            >
-                <div className="flex flex-col gap-5">
-                    <label
-                        className="font-normal text-2xl"
-                        htmlFor="email"
-                    >Email</label>
-                    <input
-                        id="email"
-                        type="email"
-                        placeholder="Email de Registro"
-                        className="w-full p-3 rounded-lg border-gray-300 border"
-                        {...register("email", {
-                            required: "El Email de registro es obligatorio",
-                            pattern: {
-                                value: /\S+@\S+\.\S+/,
-                                message: "E-mail no válido",
-                            },
-                        })}
-                    />
-                    {errors.email && (
-                        <ErrorMessage>{errors.email.message}</ErrorMessage>
-                    )}
+            <form onSubmit={handleSubmit(handleRequestCode)} className="space-y-5" noValidate>
+                <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-slate-700" htmlFor="email">
+                        Correo electrónico
+                    </label>
+                    <div className="relative">
+                        <EnvelopeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <input
+                            id="email"
+                            type="email"
+                            placeholder="correo@ejemplo.com"
+                            className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent transition shadow-sm"
+                            {...register("email", {
+                                required: "El email es obligatorio",
+                                pattern: {
+                                    value: /\S+@\S+\.\S+/,
+                                    message: "Email no válido",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
                 </div>
 
-                <input
+                <button
                     type="submit"
-                    value='Enviar Código'
-                    className="bg-fuchsia-600 hover:bg-fuchsia-700 w-full p-3 rounded-lg text-white font-black  text-xl cursor-pointer"
-                />
+                    disabled={isPending}
+                    className="w-full bg-fuchsia-600 hover:bg-fuchsia-700 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors text-sm cursor-pointer shadow-sm"
+                >
+                    {isPending ? 'Enviando...' : 'Enviar Código'}
+                </button>
             </form>
 
-            <nav className="mt-10 flex flex-col space-y-4">
-                <Link
-                    to='/auth/login'
-                    className="text-center text-gray-300 font-normal"
-                >
-                    ¿Ya tienes cuenta? Iniciar Sesión
+            <div className="mt-6 flex flex-col gap-2 text-center">
+                <Link to='/auth/login' className="text-sm text-slate-500 hover:text-fuchsia-600 transition-colors">
+                    ¿Ya tienes cuenta? <span className="font-semibold text-fuchsia-600">Inicia sesión</span>
                 </Link>
-                <Link
-                    to='/auth/forgot-password'
-                    className="text-center text-gray-300 font-normal"
-                >
-                    ¿Olvidaste tu contraseña? Reestablecer
+                <Link to='/auth/forgot-password' className="text-sm text-slate-400 hover:text-slate-600 transition-colors">
+                    ¿Olvidaste tu contraseña? Restablecerla
                 </Link>
-            </nav>
-        </>
-    )
+            </div>
+        </div>
+    );
 }

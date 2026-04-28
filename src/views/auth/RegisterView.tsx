@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { createAccount } from "@/api/AuthApi";
 import { toast } from "react-toastify";
+import { EnvelopeIcon, LockClosedIcon, UserIcon } from "@heroicons/react/24/outline";
 
 export default function RegisterView() {
 
@@ -13,11 +14,11 @@ export default function RegisterView() {
         email: '',
         password: '',
         confirmPassword: '',
-    }
+    };
 
     const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<UserRegistrationForm>({ defaultValues: initialValues });
 
-    const { mutate } = useMutation({
+    const { mutate, isPending } = useMutation({
         mutationFn: createAccount,
         onError: (error) => {
             toast.error(error.message);
@@ -25,130 +26,104 @@ export default function RegisterView() {
         onSuccess: (data) => {
             toast.success(data.message);
             reset();
-        }
-    })
+        },
+    });
 
     const password = watch('password');
-
-    const handleRegister = (formData: UserRegistrationForm) => { mutate(formData); }
+    const handleRegister = (formData: UserRegistrationForm) => { mutate(formData); };
 
     return (
-        <>
-            <h1 className="text-5xl font-black text-white">Crear Cuenta</h1>
-            <p className="text-2xl font-light text-white mt-5">
-                Llena el formulario para {''}
-                <span className=" text-fuchsia-500 font-bold"> crear tu cuenta</span>
-            </p>
+        <div>
+            <div className="mb-8">
+                <h2 className="text-3xl font-bold text-slate-900">Crea tu cuenta</h2>
+                <p className="text-slate-500 text-sm mt-1">Completa el formulario para comenzar</p>
+            </div>
 
-            <form
-                onSubmit={handleSubmit(handleRegister)}
-                className="space-y-8 p-10  bg-white mt-10"
-                noValidate
-            >
-                <div className="flex flex-col gap-5">
-                    <label
-                        className="font-normal text-2xl"
-                        htmlFor="email"
-                    >Email</label>
-                    <input
-                        id="email"
-                        type="email"
-                        placeholder="Email de Registro"
-                        className="w-full p-3  border-gray-300 border"
-                        {...register("email", {
-                            required: "El Email de registro es obligatorio",
-                            pattern: {
-                                value: /\S+@\S+\.\S+/,
-                                message: "E-mail no válido",
-                            },
-                        })}
-                    />
-                    {errors.email && (
-                        <ErrorMessage>{errors.email.message}</ErrorMessage>
-                    )}
+            <form onSubmit={handleSubmit(handleRegister)} className="space-y-4" noValidate>
+
+                <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-slate-700" htmlFor="email">Correo electrónico</label>
+                    <div className="relative">
+                        <EnvelopeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <input
+                            id="email"
+                            type="email"
+                            placeholder="correo@ejemplo.com"
+                            className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent transition shadow-sm"
+                            {...register("email", {
+                                required: "El email es obligatorio",
+                                pattern: { value: /\S+@\S+\.\S+/, message: "Email no válido" },
+                            })}
+                        />
+                    </div>
+                    {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
                 </div>
 
-                <div className="flex flex-col gap-5">
-                    <label
-                        className="font-normal text-2xl"
-                    >Nombre</label>
-                    <input
-                        type="name"
-                        placeholder="Nombre de Registro"
-                        className="w-full p-3  border-gray-300 border"
-                        {...register("name", {
-                            required: "El Nombre de usuario es obligatorio",
-                        })}
-                    />
-                    {errors.name && (
-                        <ErrorMessage>{errors.name.message}</ErrorMessage>
-                    )}
+                <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-slate-700">Nombre completo</label>
+                    <div className="relative">
+                        <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <input
+                            type="text"
+                            placeholder="Tu nombre"
+                            className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent transition shadow-sm"
+                            {...register("name", { required: "El nombre es obligatorio" })}
+                        />
+                    </div>
+                    {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
                 </div>
 
-                <div className="flex flex-col gap-5">
-                    <label
-                        className="font-normal text-2xl"
-                    >Password</label>
-
-                    <input
-                        type="password"
-                        placeholder="Password de Registro"
-                        className="w-full p-3  border-gray-300 border"
-                        {...register("password", {
-                            required: "El Password es obligatorio",
-                            minLength: {
-                                value: 8,
-                                message: 'El Password debe ser mínimo de 8 caracteres'
-                            }
-                        })}
-                    />
-                    {errors.password && (
-                        <ErrorMessage>{errors.password.message}</ErrorMessage>
-                    )}
+                <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-slate-700">Contraseña</label>
+                    <div className="relative">
+                        <LockClosedIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <input
+                            type="password"
+                            placeholder="Mínimo 8 caracteres"
+                            className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent transition shadow-sm"
+                            {...register("password", {
+                                required: "La contraseña es obligatoria",
+                                minLength: { value: 8, message: "Mínimo 8 caracteres" },
+                            })}
+                        />
+                    </div>
+                    {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
                 </div>
 
-                <div className="flex flex-col gap-5">
-                    <label
-                        className="font-normal text-2xl"
-                    >Repetir Password</label>
-
-                    <input
-                        id="password_confirmation"
-                        type="password"
-                        placeholder="Repite Password de Registro"
-                        className="w-full p-3  border-gray-300 border"
-                        {...register("confirmPassword", {
-                            required: "Repetir Password es obligatorio",
-                            validate: value => value === password || 'Los Passwords no son iguales'
-                        })}
-                    />
-
-                    {errors.confirmPassword && (
-                        <ErrorMessage>{errors.confirmPassword.message}</ErrorMessage>
-                    )}
+                <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-slate-700">Repetir Contraseña</label>
+                    <div className="relative">
+                        <LockClosedIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <input
+                            type="password"
+                            placeholder="Repite tu contraseña"
+                            className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent transition shadow-sm"
+                            {...register("confirmPassword", {
+                                required: "Debes repetir la contraseña",
+                                validate: value => value === password || 'Las contraseñas no coinciden',
+                            })}
+                        />
+                    </div>
+                    {errors.confirmPassword && <ErrorMessage>{errors.confirmPassword.message}</ErrorMessage>}
                 </div>
 
-                <input
+                <button
                     type="submit"
-                    value='Registrarme'
-                    className="bg-fuchsia-600 hover:bg-fuchsia-700 w-full p-3  text-white font-black  text-xl cursor-pointer"
-                />
+                    disabled={isPending}
+                    className="w-full bg-fuchsia-600 hover:bg-fuchsia-700 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors text-sm cursor-pointer shadow-sm mt-2"
+                >
+                    {isPending ? 'Creando cuenta...' : 'Crear Cuenta'}
+                </button>
             </form>
-            <nav className="mt-10 flex flex-col space-y-4">
-                <Link
-                    to="/auth/login"
-                    className="text-center text-gray-300 font-normal"
-                >
-                    ¿Ya tienes cuenta? Inicia sesión
-                </Link>
-                <Link
-                    to="/auth/forgot-password"
-                    className="text-center text-gray-300 font-normal"
-                >
-                    ¿Olvidaste tu contraseña? Reestablecer
-                </Link>
 
-            </nav>
-        </>
-    )
+            <div className="mt-6 text-center">
+                <p className="text-sm text-slate-500">
+                    ¿Ya tienes cuenta?{' '}
+                    <Link to="/auth/login" className="text-fuchsia-600 hover:text-fuchsia-700 font-semibold">
+                        Inicia sesión
+                    </Link>
+                </p>
+            </div>
+        </div>
+    );
 }

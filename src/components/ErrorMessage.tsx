@@ -1,7 +1,7 @@
 export const ErrorMessage = ({ children }: { children: React.ReactNode }) => {
     return (
-        <div className="text-center my-4 bg-red-500 text-white p-3 uppercase text-sm">
+        <p className="text-xs text-red-600 font-medium mt-1">
             {children}
-        </div>
-    )
-}
+        </p>
+    );
+};

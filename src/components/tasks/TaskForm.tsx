@@ -1,52 +1,46 @@
-import type { FieldErrors, UseFormRegister } from "react-hook-form"
+import type { FieldErrors, UseFormRegister } from "react-hook-form";
 import type { TaskFormData } from "@/types/index";
 import { ErrorMessage } from "../ErrorMessage";
 
-
 type TaskFormProps = {
-    errors: FieldErrors<TaskFormData>
-    register: UseFormRegister<TaskFormData>
+    errors: FieldErrors<TaskFormData>;
+    register: UseFormRegister<TaskFormData>;
 }
 
 export default function TaskForm({ errors, register }: TaskFormProps) {
     return (
-        <>
-            <div className="flex flex-col gap-5">
-                <label
-                    className="font-normal text-2xl"
-                    htmlFor="name"
-                >Nombre de la tarea</label>
+        <div className="space-y-5">
+            <div className="space-y-1.5">
+                <label className="text-sm font-medium text-slate-700" htmlFor="name">
+                    Nombre de la Tarea
+                </label>
                 <input
                     id="name"
                     type="text"
-                    placeholder="Nombre de la tarea"
-                    className="w-full p-3  border-gray-300 border"
+                    placeholder="Ej: Diseñar mockup inicial"
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent transition"
                     {...register("name", {
                         required: "El nombre de la tarea es obligatorio",
                     })}
                 />
-                {errors.name && (
-                    <ErrorMessage>{errors.name.message}</ErrorMessage>
-                )}
+                {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
             </div>
 
-            <div className="flex flex-col gap-5">
-                <label
-                    className="font-normal text-2xl"
-                    htmlFor="description"
-                >Descripción de la tarea</label>
+            <div className="space-y-1.5">
+                <label className="text-sm font-medium text-slate-700" htmlFor="description">
+                    Descripción
+                </label>
                 <textarea
                     id="description"
-                    placeholder="Descripción de la tarea"
-                    className="w-full p-3  border-gray-300 border"
+                    rows={4}
+                    placeholder="Describe lo que hay que hacer..."
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent transition resize-none"
                     {...register("description", {
-                        required: "La descripción de la tarea es obligatoria"
+                        required: "La descripción es obligatoria",
                     })}
                 />
-                {errors.description && (
-                    <ErrorMessage>{errors.description.message}</ErrorMessage>
-                )}
+                {errors.description && <ErrorMessage>{errors.description.message}</ErrorMessage>}
             </div>
-        </>
-    )
+        </div>
+    );
 }

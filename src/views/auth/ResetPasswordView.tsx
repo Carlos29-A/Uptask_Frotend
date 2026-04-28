@@ -7,25 +7,18 @@ export default function ResetPasswordView() {
     const [token, setToken] = useState<ConfirmAccountForm['token']>('');
     const [isValidToken, setIsValidToken] = useState(false);
 
-
-
     return (
-        <>
-            <h1 className="text-5xl font-black text-white">Reestablecer Contraseña</h1>
-            <p className="text-2xl font-light text-white mt-5">
-                Ingresa el código que recibiste {''}
-                <span className=" text-fuchsia-500 font-bold"> por e-mail</span>
-            </p>
+        <div>
+            <div className="mb-8">
+                <h2 className="text-3xl font-bold text-slate-900">Restablecer contraseña</h2>
+                <p className="text-slate-500 text-sm mt-1">
+                    {!isValidToken ? 'Ingresa el código que recibiste por email' : 'Crea tu nueva contraseña'}
+                </p>
+            </div>
             {!isValidToken
-                ? (
-                    <NewPasswordToken
-                        token={token}
-                        setToken={setToken}
-                        setIsValidToken={setIsValidToken}
-                    />
-                )
+                ? <NewPasswordToken token={token} setToken={setToken} setIsValidToken={setIsValidToken} />
                 : <NewPasswordForm token={token} />
             }
-        </>
-    )
+        </div>
+    );
 }

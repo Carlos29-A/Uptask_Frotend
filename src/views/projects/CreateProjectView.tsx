@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { ProjectForm } from "@/components/projects";
 import type { ProjectFormData } from "@/types/index";
 import { createProject } from "@/api/ProjectApi";
-
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 export default function CreateProjectView() {
 
@@ -14,10 +14,9 @@ export default function CreateProjectView() {
         projectName: '',
         clientName: '',
         description: '',
-    }
+    };
 
     const { register, handleSubmit, formState: { errors } } = useForm({ defaultValues: initialValues });
-
 
     const { mutate } = useMutation({
         mutationFn: createProject,
@@ -27,42 +26,38 @@ export default function CreateProjectView() {
         onSuccess: (data) => {
             toast.success(data);
             navigate('/');
-        }
+        },
     });
 
     const handleForm = (formData: ProjectFormData) => {
         mutate(formData);
-    }
+    };
 
     return (
-        <>
-            <div className="max-w-3xl mx-auto">
-                <h1 className="text-5xl font-black">Crear Proyecto</h1>
-                <p className="text-2xl font-light text-gray-500 mt-5">
-                    Llena el siguiente formulario para crear un nuevo proyecto.
-                </p>
-
+        <div className="max-w-2xl mx-auto">
+            <div className="mb-8">
                 <Link
-                    className="bg-purple-400 hover:bg-purple-500 text-white font-bold py-3 px-10 text-center inline-block mt-5 transition-colors"
                     to="/"
+                    className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors mb-4"
                 >
+                    <ArrowLeftIcon className="w-4 h-4" />
                     Volver a proyectos
                 </Link>
-
-
-                <form
-                    className="mt-10 bg-white shadow-lg p-10 rounded-lg"
-                    onSubmit={handleSubmit(handleForm)}
-                    noValidate
-                >
-                    <ProjectForm
-                        register={register}
-                        errors={errors}
-                    />
-                    <input type="submit" className="bg-fuchsia-800 hover:bg-fuchsia-950 text-white font-bold py-3 px-10  text-center inline-block mt-5 transition-colors w-full cursor-pointer" value={"Crear Proyecto"} />
-                </form>
+                <h1 className="text-3xl font-bold text-slate-900">Crear Proyecto</h1>
+                <p className="text-slate-500 text-sm mt-1">Completa los campos para crear un nuevo proyecto</p>
             </div>
 
-        </>
-    )
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8">
+                <form onSubmit={handleSubmit(handleForm)} noValidate className="space-y-6">
+                    <ProjectForm register={register} errors={errors} />
+                    <button
+                        type="submit"
+                        className="w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-semibold py-3 rounded-xl transition-colors text-sm cursor-pointer"
+                    >
+                        Crear Proyecto
+                    </button>
+                </form>
+            </div>
+        </div>
+    );
 }

@@ -1,73 +1,62 @@
 import type { ProjectFormData } from "@/types/index";
 import { ErrorMessage } from "../ErrorMessage";
-import type { UseFormRegister } from "react-hook-form";
-import type { FieldErrors } from "react-hook-form";
-
+import type { UseFormRegister, FieldErrors } from "react-hook-form";
 
 type ProjectFormProps = {
     register: UseFormRegister<ProjectFormData>;
     errors: FieldErrors<ProjectFormData>;
 }
 
-
 export const ProjectForm = ({ register, errors }: ProjectFormProps) => {
     return (
-        <>
-            <div className="mb-5 space-y-4 flex flex-col">
-                <label htmlFor="projectName" className="text-sm uppercase font-bold">
+        <div className="space-y-5">
+            <div className="space-y-1.5">
+                <label htmlFor="projectName" className="text-sm font-medium text-slate-700">
                     Nombre del Proyecto
                 </label>
                 <input
                     id="projectName"
-                    className="w-full p-3  border border-gray-200"
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent transition"
                     type="text"
-                    placeholder="Nombre del Proyecto"
+                    placeholder="Ej: Sistema de pagos"
                     {...register("projectName", {
-                        required: "El Titulo del Proyecto es obligatorio",
+                        required: "El nombre del proyecto es obligatorio",
                     })}
                 />
-
-                {errors.projectName && (
-                    <ErrorMessage>{errors.projectName.message}</ErrorMessage>
-                )}
+                {errors.projectName && <ErrorMessage>{errors.projectName.message}</ErrorMessage>}
             </div>
 
-            <div className="mb-5 space-y-4 flex flex-col">
-                <label htmlFor="clientName" className="text-sm uppercase font-bold">
-                    Nombre Cliente
+            <div className="space-y-1.5">
+                <label htmlFor="clientName" className="text-sm font-medium text-slate-700">
+                    Nombre del Cliente
                 </label>
                 <input
                     id="clientName"
-                    className="w-full p-3  border border-gray-200"
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent transition"
                     type="text"
-                    placeholder="Nombre del Cliente"
+                    placeholder="Ej: Empresa XYZ"
                     {...register("clientName", {
-                        required: "El Nombre del Cliente es obligatorio",
+                        required: "El nombre del cliente es obligatorio",
                     })}
                 />
-
-                {errors.clientName && (
-                    <ErrorMessage>{errors.clientName.message}</ErrorMessage>
-                )}
+                {errors.clientName && <ErrorMessage>{errors.clientName.message}</ErrorMessage>}
             </div>
 
-            <div className="mb-5 space-y-4 flex flex-col">
-                <label htmlFor="description" className="text-sm uppercase font-bold">
+            <div className="space-y-1.5">
+                <label htmlFor="description" className="text-sm font-medium text-slate-700">
                     Descripción
                 </label>
                 <textarea
                     id="description"
-                    className="w-full p-3  border border-gray-200"
-                    placeholder="Descripción del Proyecto"
+                    rows={4}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent transition resize-none"
+                    placeholder="Describe brevemente el proyecto..."
                     {...register("description", {
-                        required: "Una descripción del proyecto es obligatoria"
+                        required: "La descripción es obligatoria",
                     })}
                 />
-
-                {errors.description && (
-                    <ErrorMessage>{errors.description.message}</ErrorMessage>
-                )}
+                {errors.description && <ErrorMessage>{errors.description.message}</ErrorMessage>}
             </div>
-        </>
-    )
-}
+        </div>
+    );
+};

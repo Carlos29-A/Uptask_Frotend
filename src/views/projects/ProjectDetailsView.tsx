@@ -8,9 +8,9 @@ import { isManager } from "@/utils/policites";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { PlusIcon, UsersIcon } from "@heroicons/react/24/outline";
 
 export default function ProjectDetailsView() {
-
 
     const { data: user, isLoading: isUserLoading } = useAuth();
     const navigate = useNavigate();
@@ -22,45 +22,59 @@ export default function ProjectDetailsView() {
         queryKey: ["editProject", projectId],
         queryFn: () => getFullProjectById(projectId),
         retry: false,
-    })
+    });
 
+    const canEdit = useMemo(() => {
+        if (!data || !user) return false;
+        return isManager(data.manager, user._id);
+    }, [data, user]);
 
-    if (isLoading || isUserLoading) return <p>Cargando...</p>;
-    if (isError) return <Navigate to="/404" />
-    if (!data || !user) return <Navigate to="/404" />
-    const canEdit = useMemo(() => isManager(data.manager, user._id), [data, user])
+    if (isLoading || isUserLoading) return (
+        <div className="flex items-center justify-center py-32">
+            <div className="flex items-center gap-3 text-slate-400">
+                <div className="w-5 h-5 border-2 border-fuchsia-500 border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm font-medium">Cargando proyecto...</span>
+            </div>
+        </div>
+    );
 
+    if (isError) return <Navigate to="/404" />;
+    if (!data || !user) return <Navigate to="/404" />;
 
     return (
         <>
-            <h1 className="text-4xl font-black">{data.projectName}</h1>
-            <p className="text-2xl font-light text-gray-500 mt-5">{data.description}</p>
-            {isManager(data.manager, user._id) && (
-                <nav className="my-5 flex gap-3">
-                    <button
-                        type="button"
-                        className="text-white text-sm uppercase font-bold bg-purple-500 p-3 hover:bg-purple-600 transition-colors cursor-pointer"
-                        onClick={() => navigate(`?newTask=true`)}
-                    >
-                        Agregar Tarea
-                    </button>
+            <div className="mb-8">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-900">{data.projectName}</h1>
+                        <p className="text-slate-500 mt-1">{data.description}</p>
+                    </div>
+                    {isManager(data.manager, user._id) && (
+                        <div className="flex gap-2 flex-shrink-0">
+                            <button
+                                type="button"
+                                onClick={() => navigate(`?newTask=true`)}
+                                className="inline-flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-semibold px-4 py-2.5 rounded-xl transition-colors text-sm"
+                            >
+                                <PlusIcon className="w-4 h-4" />
+                                Nueva Tarea
+                            </button>
+                            <Link
+                                to={`/projects/${projectId}/team`}
+                                className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold px-4 py-2.5 rounded-xl border border-slate-200 transition-colors text-sm"
+                            >
+                                <UsersIcon className="w-4 h-4" />
+                                Colaboradores
+                            </Link>
+                        </div>
+                    )}
+                </div>
+            </div>
 
-                    <Link
-                        to={`/projects/${projectId}/team`}
-                        className="bg-fuchsia-400 hover:bg-fuchsia-700 px-10 py-3 text-white uppercase font-bold cursor-pointer transition-colors"
-                    >
-                        Colaboradores
-                    </Link>
-                </nav>
-            )}
-
-            <TaskList
-                tasks={data.tasks}
-                canEdit={canEdit}
-            />
+            <TaskList tasks={data.tasks} canEdit={canEdit} />
             <AddTaskModal />
             <EditTaskData />
             <TaskModalDetails />
         </>
-    )
+    );
 }

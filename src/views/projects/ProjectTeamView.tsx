@@ -1,15 +1,14 @@
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useLocation, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import AddMemberModal from "@/components/team/AddMemberModal";
 import { deleteTeamMember, getTeamMembers } from "@/api/TeamApi";
-import { Menu, Transition } from "@headlessui/react";
-import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
-import { Fragment } from "react/jsx-runtime";
 import { toast } from "react-toastify";
+import { PlusIcon, ArrowLeftIcon, TrashIcon, UsersIcon } from "@heroicons/react/24/outline";
 
 export default function ProjectTeamView() {
 
     const navigate = useNavigate();
+    const location = useLocation();
     const params = useParams();
     const projectId = params.projectId as string;
     const queryClient = useQueryClient();
@@ -18,8 +17,7 @@ export default function ProjectTeamView() {
         queryKey: ["projectTeam", projectId],
         queryFn: () => getTeamMembers({ projectId }),
         retry: false,
-    })
-
+    });
 
     const { mutate } = useMutation({
         mutationFn: deleteTeamMember,
@@ -29,86 +27,84 @@ export default function ProjectTeamView() {
         onSuccess: (data) => {
             toast.success(data.message);
             queryClient.invalidateQueries({ queryKey: ["projectTeam", projectId] });
-        }
-    })
+        },
+    });
 
+    if (isLoading) return (
+        <div className="flex items-center justify-center py-32">
+            <div className="flex items-center gap-3 text-slate-400">
+                <div className="w-5 h-5 border-2 border-fuchsia-500 border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm font-medium">Cargando equipo...</span>
+            </div>
+        </div>
+    );
 
-    if (isLoading) return <p>Cargando...</p>;
-    if (isError) return <Navigate to="/404" />
+    if (isError) return <Navigate to="/404" />;
+
     if (data) return (
         <>
-            <h1 className="text-4xl font-black">Administrar Equipos</h1>
-            <p className="text-2xl font-light text-gray-500 mt-5">Gestiona los colaboradores del proyecto y asigna sus roles.</p>
-            <nav className="my-5 flex gap-3">
-                <button
-                    type="button"
-                    className="text-white text-sm uppercase font-bold bg-purple-500 p-3 hover:bg-purple-600 transition-colors cursor-pointer"
-                    onClick={() => navigate(location.pathname + '?addMember=true')}
-                >
-                    Nuevo Colaborador
-                </button>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-900">Equipo del Proyecto</h1>
+                    <p className="text-slate-500 text-sm mt-1">Gestiona los colaboradores y sus accesos</p>
+                </div>
+                <div className="flex gap-2">
+                    <button
+                        type="button"
+                        onClick={() => navigate(location.pathname + '?addMember=true')}
+                        className="inline-flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-semibold px-4 py-2.5 rounded-xl transition-colors text-sm"
+                    >
+                        <PlusIcon className="w-4 h-4" />
+                        Agregar Miembro
+                    </button>
+                    <Link
+                        to={`/projects/${projectId}`}
+                        className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold px-4 py-2.5 rounded-xl border border-slate-200 transition-colors text-sm"
+                    >
+                        <ArrowLeftIcon className="w-4 h-4" />
+                        Volver
+                    </Link>
+                </div>
+            </div>
 
-                <Link
-                    to={`/projects/${projectId}`}
-                    className="bg-fuchsia-400 hover:bg-fuchsia-700 px-10 py-3 text-white uppercase font-bold cursor-pointer transition-colors"
-                >
-                    Volver a Proyecto
-                </Link>
-            </nav>
-
-
-            <h2 className="text-5xl font-black my-10">Miembros actuales</h2>
             {data.length ? (
-                <ul role="list" className="divide-y divide-gray-100 border border-gray-100 mt-10 bg-white shadow-lg">
-                    {data?.map((member) => (
-                        <li key={member._id} className="flex justify-between gap-x-6 px-5 py-10">
-                            <div className="flex min-w-0 gap-x-4">
-                                <div className="min-w-0 flex-auto space-y-2">
-                                    <p className="text-2xl font-black text-gray-600">
-                                        {member.name}
-                                    </p>
-                                    <p className="text-sm text-gray-400">
-                                        {member.email}
-                                    </p>
+                <div className="grid gap-3">
+                    {data.map((member) => (
+                        <div
+                            key={member._id}
+                            className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex items-center justify-between gap-4"
+                        >
+                            <div className="flex items-center gap-4 min-w-0">
+                                <div className="w-10 h-10 rounded-full bg-fuchsia-100 flex items-center justify-center flex-shrink-0">
+                                    <span className="text-fuchsia-700 font-bold text-sm">
+                                        {member.name.charAt(0).toUpperCase()}
+                                    </span>
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="font-semibold text-slate-900 truncate">{member.name}</p>
+                                    <p className="text-sm text-slate-400 truncate">{member.email}</p>
                                 </div>
                             </div>
-                            <div className="flex shrink-0 items-center gap-x-6">
-                                <Menu as="div" className="relative flex-none">
-                                    <Menu.Button className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">
-                                        <span className="sr-only">opciones</span>
-                                        <EllipsisVerticalIcon className="h-9 w-9" aria-hidden="true" />
-                                    </Menu.Button>
-                                    <Transition
-                                        as={Fragment}
-                                        enter="transition ease-out duration-100"
-                                        enterFrom="transform opacity-0 scale-95"
-                                        enterTo="transform opacity-100 scale-100"
-                                        leave="transition ease-in duration-75"
-                                        leaveFrom="transform opacity-100 scale-100"
-                                        leaveTo="transform opacity-0 scale-95"
-                                    >
-                                        <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                                            <Menu.Item>
-                                                <button
-                                                    type='button'
-                                                    className='block px-3 py-1 text-sm leading-6 text-red-500'
-                                                    onClick={() => mutate({ projectId, userId: member._id })}
-                                                >
-                                                    Eliminar del Proyecto
-                                                </button>
-                                            </Menu.Item>
-                                        </Menu.Items>
-                                    </Transition>
-                                </Menu>
-                            </div>
-                        </li>
+                            <button
+                                type="button"
+                                onClick={() => mutate({ projectId, userId: member._id })}
+                                className="flex-shrink-0 inline-flex items-center gap-1.5 text-sm text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors font-medium cursor-pointer"
+                            >
+                                <TrashIcon className="w-4 h-4" />
+                                Eliminar
+                            </button>
+                        </div>
                     ))}
-                </ul>
+                </div>
             ) : (
-                <p className='text-center py-20'>No hay miembros en este equipo</p>
+                <div className="text-center py-20 bg-white rounded-xl border border-dashed border-slate-200">
+                    <UsersIcon className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                    <p className="text-slate-500 font-medium">No hay miembros en este equipo</p>
+                    <p className="text-slate-400 text-sm mt-1">Agrega colaboradores para comenzar</p>
+                </div>
             )}
 
             <AddMemberModal />
         </>
-    )
+    );
 }

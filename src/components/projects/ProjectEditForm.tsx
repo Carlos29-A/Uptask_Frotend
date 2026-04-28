@@ -1,81 +1,72 @@
-import { Link, useNavigate } from "react-router-dom"
-import { ProjectForm } from "./ProjectForm"
+import { Link, useNavigate } from "react-router-dom";
+import { ProjectForm } from "./ProjectForm";
 import type { Project, ProjectFormData } from "@/types/index";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateProject } from "@/api/ProjectApi";
 import { toast } from "react-toastify";
-
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 type ProjectEditFormProps = {
     data?: ProjectFormData;
     projectId: Project['_id'];
 }
 
-
 export const ProjectEditForm = ({ data, projectId }: ProjectEditFormProps) => {
-    if (!data) return null
-
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+
     const initialValues: ProjectFormData = {
-        projectName: data.projectName,
-        clientName: data.clientName,
-        description: data.description,
-    }
-    // Hooks para el formulario
+        projectName: data?.projectName ?? '',
+        clientName: data?.clientName ?? '',
+        description: data?.description ?? '',
+    };
+
     const { register, handleSubmit, formState: { errors } } = useForm({ defaultValues: initialValues });
 
-    // Hooks para la mutación
-    const { mutate } = useMutation({
+    const { mutate, isPending } = useMutation({
         mutationFn: updateProject,
-        onError: (error) => {
-            toast.error(error.message);
-        },
-        onSuccess: (data) => {
-            // Elimina los datos cacheados y vuelve a cargar los datos
+        onError: (error) => { toast.error(error.message); },
+        onSuccess: (responseData) => {
             queryClient.invalidateQueries({ queryKey: ["projects"] });
             queryClient.invalidateQueries({ queryKey: ["editProject", projectId] });
-            toast.success(data);
+            toast.success(responseData);
             navigate('/');
-        }
-    })
+        },
+    });
 
     const handleForm = (formData: ProjectFormData) => {
-        const data = {
-            projectData: formData,
-            projectId
-        }
-        mutate(data);
+        mutate({ projectData: formData, projectId });
+    };
 
-    }
+    if (!data) return null;
 
     return (
-        <div className="max-w-3xl mx-auto">
-            <h1 className="text-5xl font-black">Editar Proyecto</h1>
-            <p className="text-2xl font-light text-gray-500 mt-5">
-                Llena el siguiente formulario para editar el proyecto.
-            </p>
+        <div className="max-w-2xl mx-auto">
+            <div className="mb-8">
+                <Link
+                    to="/"
+                    className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors mb-4"
+                >
+                    <ArrowLeftIcon className="w-4 h-4" />
+                    Volver a proyectos
+                </Link>
+                <h1 className="text-3xl font-bold text-slate-900">Editar Proyecto</h1>
+                <p className="text-slate-500 text-sm mt-1">Actualiza los datos del proyecto</p>
+            </div>
 
-            <Link
-                className="bg-purple-400 hover:bg-purple-500 text-white font-bold py-3 px-10 text-center inline-block mt-5 transition-colors"
-                to="/"
-            >
-                Volver a proyectos
-            </Link>
-
-
-            <form
-                className="mt-10 bg-white shadow-lg p-10 rounded-lg"
-                onSubmit={handleSubmit(handleForm)}
-                noValidate
-            >
-                <ProjectForm
-                    register={register}
-                    errors={errors}
-                />
-                <input type="submit" className="bg-fuchsia-800 hover:bg-fuchsia-950 text-white font-bold py-3 px-10  text-center inline-block mt-5 transition-colors w-full cursor-pointer" value={"Guardar Cambios"} />
-            </form>
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8">
+                <form onSubmit={handleSubmit(handleForm)} noValidate className="space-y-6">
+                    <ProjectForm register={register} errors={errors} />
+                    <button
+                        type="submit"
+                        disabled={isPending}
+                        className="w-full bg-fuchsia-600 hover:bg-fuchsia-700 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors text-sm cursor-pointer"
+                    >
+                        {isPending ? 'Guardando...' : 'Guardar Cambios'}
+                    </button>
+                </form>
+            </div>
         </div>
-    )
-}
+    );
+};
