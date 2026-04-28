@@ -28,7 +28,9 @@ export default function AddNoteForm() {
             toast.error(error.message);
         },
         onSuccess: (data) => {
-            toast.success(data.message);
+            if (data) {
+                toast.success(data.message);
+            }
             queryClient.invalidateQueries({ queryKey: ['task', taskId] });
         },
     });

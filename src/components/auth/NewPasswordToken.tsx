@@ -24,11 +24,11 @@ export default function NewPasswordToken({ token, setToken, setIsValidToken }: N
         },
     });
 
-    const handleChange = (value: string) => { setToken(value); };
+    const handleChange = (value: string) => { setToken?.(value); };
     const handleComplete = (value: string) => {
-        setToken(value);
+        setToken?.(value);
         mutate({ token: value });
-        setIsValidToken(true);
+        setIsValidToken?.(true);
     };
 
     return (

@@ -1,4 +1,5 @@
 import api from "../lib/axios";
+import { isAxiosError } from "axios";
 import { dashboardProjectSchema, editProjectSchema, projectSchema, type DashboardProject, type Project, type ProjectFormData } from "../types";
 
 export async function createProject(projectData: ProjectFormData) {
@@ -6,9 +7,12 @@ export async function createProject(projectData: ProjectFormData) {
         const { data } = await api.post("/projects", projectData);
         return data;
     } catch (error) {
-        throw error.response.data || {
-            message: "Error al crear el proyecto",
-        };
+        if (isAxiosError(error)) {
+            throw error.response?.data || {
+                message: "Error al crear el proyecto",
+            };
+        }
+        throw error;
     }
 }
 
@@ -23,9 +27,12 @@ export async function getProjects(): Promise<DashboardProject[]> {
         }
         return data
     } catch (error) {
-        throw error.response.data || {
-            message: "Error al crear el proyecto",
-        };
+        if (isAxiosError(error)) {
+            throw error.response?.data || {
+                message: "Error al obtener proyectos",
+            };
+        }
+        throw error;
     }
 }
 
@@ -38,9 +45,12 @@ export async function getProjectById(projectId: Project['_id']) {
             return response.data;
         }
     } catch (error) {
-        throw error.response.data || {
-            message: "Error al obtener el proyecto",
-        };
+        if (isAxiosError(error)) {
+            throw error.response?.data || {
+                message: "Error al obtener el proyecto",
+            };
+        }
+        throw error;
     }
 }
 export async function getFullProjectById(projectId: Project['_id']) {
@@ -52,9 +62,12 @@ export async function getFullProjectById(projectId: Project['_id']) {
             return response.data;
         }
     } catch (error) {
-        throw error.response.data || {
-            message: "Error al obtener el proyecto",
-        };
+        if (isAxiosError(error)) {
+            throw error.response?.data || {
+                message: "Error al obtener el proyecto",
+            };
+        }
+        throw error;
     }
 }
 
@@ -70,9 +83,12 @@ export async function updateProject({ projectData, projectId }: UpdateProjectDat
         const { data } = await api.put<string>(`/projects/${projectId}`, projectData);
         return data;
     } catch (error) {
-        throw error.response.data || {
-            message: "Error al actualizar el proyecto",
-        };
+        if (isAxiosError(error)) {
+            throw error.response?.data || {
+                message: "Error al actualizar el proyecto",
+            };
+        }
+        throw error;
     }
 }
 
@@ -82,8 +98,11 @@ export async function deleteProject(projectId: Project['_id']) {
         const { data } = await api.delete<string>(`/projects/${projectId}`);
         return data;
     } catch (error) {
-        throw error.response.data || {
-            message: "Error al eliminar el proyecto",
-        };
+        if (isAxiosError(error)) {
+            throw error.response?.data || {
+                message: "Error al eliminar el proyecto",
+            };
+        }
+        throw error;
     }
 }

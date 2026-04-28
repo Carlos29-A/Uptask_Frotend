@@ -25,7 +25,9 @@ export default function ProjectTeamView() {
             toast.error(error.message);
         },
         onSuccess: (data) => {
-            toast.success(data.message);
+            if (data) {
+                toast.success(data.message);
+            }
             queryClient.invalidateQueries({ queryKey: ["projectTeam", projectId] });
         },
     });
@@ -41,7 +43,9 @@ export default function ProjectTeamView() {
 
     if (isError) return <Navigate to="/404" />;
 
-    if (data) return (
+    if (!data) return null;
+
+    return (
         <>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
                 <div>

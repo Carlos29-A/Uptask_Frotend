@@ -60,7 +60,7 @@ export default function DashboardView() {
             {data.length ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                     {data.map((project) => {
-                        const manager = isManager(project.manager, user._id);
+                        const manager = user ? isManager(project.manager, user._id) : false;
                         return (
                             <div
                                 key={project._id}

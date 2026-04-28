@@ -1,6 +1,6 @@
 import { DndContext, type DragEndEvent, MouseSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
-import type { Project, Task, TaskProject, TaskStatus } from "@/types/index";
+import type { Project, TaskProject, TaskStatus } from "@/types/index";
 import TaskCard from "./TaskCard";
 import DropTask from "./DropTask";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -74,8 +74,9 @@ export default function TaskList({ tasks, canEdit }: TaskListProps) {
             const status = over.id as TaskStatus;
             mutate({ projectId, taskId, status });
 
-            queryClient.setQueryData(["editProject", projectId], (oldData: Project) => {
-                const updatedTasks = oldData.tasks.map((task: Task) =>
+            queryClient.setQueryData(["editProject", projectId], (oldData: Project | undefined) => {
+                if (!oldData) return oldData;
+                const updatedTasks = oldData.tasks.map((task) =>
                     task._id === taskId ? { ...task, status } : task
                 );
                 return { ...oldData, tasks: updatedTasks };
