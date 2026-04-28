@@ -65,11 +65,9 @@ export default function LoginView() {
                         <label className="text-sm font-medium text-slate-700" htmlFor="password">
                             Contraseña
                         </label>
-                        <Link to="/auth/forgot-password" className="text-xs text-fuchsia-600 hover:text-fuchsia-700 font-medium">
-                            ¿Olvidaste tu contraseña?
-                        </Link>
                     </div>
-                    <div className="relative">
+
+                    <div className="relative ">
                         <LockClosedIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                         <input
                             id="password"
@@ -81,6 +79,9 @@ export default function LoginView() {
                             })}
                         />
                     </div>
+                    <Link to="/auth/forgot-password" className="text-xs text-fuchsia-600 hover:text-fuchsia-700 font-medium ">
+                        ¿Olvidaste tu contraseña?
+                    </Link>
                     {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
                 </div>
 
